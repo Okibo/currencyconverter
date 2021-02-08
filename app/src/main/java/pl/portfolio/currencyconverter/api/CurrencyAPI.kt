@@ -5,6 +5,7 @@ import pl.portfolio.currencyconverter.models.CurrencyModel
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface CurrencyAPI {
 
@@ -24,13 +25,12 @@ interface CurrencyAPI {
 //        access_key: String = API_KEY
 //    ): Response<CurrencyResponse>
 //
-//    @GET("api/latest")
-//    suspend fun getLatestCurrencyExchangeForCustomBase(
-//        @Query("base")
-//        base: String,
-//        @Query("access_key")
-//        access_key: String = API_KEY
-//    )
+
+    @GET("/latest")
+    suspend fun getLatestCurrencyExchangeForBase(
+        @Query("base")
+        base: String
+    ): Response<CurrencyModel>
 
     @GET("/latest")
     suspend fun getLatestCurrencyExchange(): Response<CurrencyModel>

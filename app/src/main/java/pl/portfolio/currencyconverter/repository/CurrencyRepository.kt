@@ -6,4 +6,7 @@ class CurrencyRepository {
 
     suspend fun getLatestCurrencyExchange() =
         RetrofitInstance.api.getLatestCurrencyExchange()
+
+    suspend fun getLatestCurrencyExchangeForBase(base: String) =
+        RetrofitInstance.api.getLatestCurrencyExchangeForBase(base)
 }
