@@ -20,19 +20,21 @@
         android:id="@+id/from_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="@+id/base_spinner"
         app:layout_constraintStart_toStartOf="@+id/base_spinner"
-        app:layout_constraintTop_toTopOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/base_spinner" />
 
     <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:id="@+id/to_spinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+        app:layout_constraintEnd_toEndOf="@+id/from_spinner"
         app:layout_constraintStart_toStartOf="@+id/from_spinner"
-        app:layout_constraintTop_toTopOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/from_spinner" />
 
     <TextView
         android:id="@+id/textView"
@@ -45,49 +47,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/from_text_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="From"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="To"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-    <EditText
-        android:id="@+id/fromEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="1.0"
-        android:inputType="numberDecimal"
-        android:textColor="@color/black"
+        android:background="@android:color/transparent"
+        app:boxBackgroundColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/from_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/from_spinner"
-        app:layout_constraintTop_toTopOf="@+id/from_spinner" />
+        app:layout_constraintTop_toTopOf="@+id/from_spinner">
 
-    <EditText
-        android:id="@+id/toEditText"
+        <EditText
+            android:id="@+id/fromEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="From"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:maxLines="1"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/to_text_input_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="1.0"
-        android:inputType="numberDecimal"
-        android:textColor="@color/black"
+        android:background="@android:color/transparent"
+        app:boxBackgroundColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/to_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/to_spinner"
-        app:layout_constraintTop_toTopOf="@+id/to_spinner" />
+        app:layout_constraintTop_toTopOf="@+id/to_spinner">
+
+        <EditText
+            android:id="@+id/toEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="To"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:maxLines="1"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/currencyDateButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/base_spinner"
+        app:layout_constraintEnd_toEndOf="@+id/from_text_input_layout"
+        app:layout_constraintStart_toStartOf="@+id/from_text_input_layout"
+        app:layout_constraintTop_toTopOf="@+id/base_spinner"
+        tools:text="2020-02-08" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

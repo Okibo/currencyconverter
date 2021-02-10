@@ -1,5 +1,7 @@
 package pl.portfolio.currencyconverter.ui.fragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,7 +15,14 @@ import pl.portfolio.currencyconverter.CurrencyConverterActivity
 import pl.portfolio.currencyconverter.R
 import pl.portfolio.currencyconverter.databinding.FragmentMainBinding
 import pl.portfolio.currencyconverter.ui.CurrencyViewModel
+import pl.portfolio.currencyconverter.util.Constants.Companion.DATE_FORMAT
+import pl.portfolio.currencyconverter.util.Constants.Companion.DATE_PICKER_REQUEST_CODE
+import pl.portfolio.currencyconverter.util.Constants.Companion.OLDEST_DATE
 import pl.portfolio.currencyconverter.util.Constants.Companion.RATE_PRECISION
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class MainFragment : Fragment(R.layout.fragment_main), AdapterView.OnItemSelectedListener {
 
@@ -25,6 +34,10 @@ class MainFragment : Fragment(R.layout.fragment_main), AdapterView.OnItemSelecte
 
         viewModel = (activity as CurrencyConverterActivity).viewModel
         binding = FragmentMainBinding.bind(view)
+
+        viewModel.ratesDate.observe(viewLifecycleOwner, { date ->
+            binding.currencyDateButton.text = date
+        })
 
         viewModel.getCurrencySymbols().observe(viewLifecycleOwner, { spinner ->
             val spinnerAdapter = ArrayAdapter(
@@ -123,6 +136,45 @@ class MainFragment : Fragment(R.layout.fragment_main), AdapterView.OnItemSelecte
         binding.fromSpinner.onItemSelectedListener = this
         binding.toSpinner.onItemSelectedListener = this
 
+        binding.currencyDateButton.setOnClickListener {
+            val datePickerFragment = DatePickerFragment()
+            datePickerFragment.setTargetFragment(this, DATE_PICKER_REQUEST_CODE)
+            datePickerFragment.show(
+                (activity as CurrencyConverterActivity).supportFragmentManager,
+                "datePicker"
+            )
+        }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == DATE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val selectedDate = data?.getStringExtra("selectedDate")
+            val parser = SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH)
+            val date = parser.parse(selectedDate!!)
+            val currentDate: Date = Calendar.getInstance().time
+            val oldestDate = parser.parse(OLDEST_DATE)
+
+            when {
+                date!!.after(currentDate) ->
+                    Toast.makeText(context, "Date can't be after today", Toast.LENGTH_LONG)
+                        .show()
+                date.before(oldestDate) ->
+                    Toast.makeText(context, "Date can't be before $OLDEST_DATE", Toast.LENGTH_LONG)
+                        .show()
+                else ->{
+                    val symbol: String = binding.baseSpinner.selectedItem.toString()
+                    viewModel.getHistoricalCurrencyExchangeForBase(
+                        selectedDate,
+                        symbol
+                    )
+                    binding.currencyDateButton.text = selectedDate
+                }
+
+            }
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -131,11 +183,11 @@ class MainFragment : Fragment(R.layout.fragment_main), AdapterView.OnItemSelecte
             when (parent.id) {
                 R.id.base_spinner -> viewModel.getLatestCurrencyExchangeForBase(symbol)
                 R.id.from_spinner -> binding.fromEditText.setText(
-                    viewModel.getRate(symbol).toString(),
+                    viewModel.getRate(symbol).format(RATE_PRECISION).toString(),
                     TextView.BufferType.EDITABLE
                 )
                 R.id.to_spinner -> binding.toEditText.setText(
-                    viewModel.getRate(symbol).toString(),
+                    viewModel.getRate(symbol).format(RATE_PRECISION).toString(),
                     TextView.BufferType.EDITABLE
                 )
             }

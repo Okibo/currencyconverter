@@ -19,17 +19,17 @@ import java.io.IOException
 class CurrencyViewModel(app: Application, private val currencyRepository: CurrencyRepository) :
     AndroidViewModel(app) {
 
+    private var currencyResponse: Response<CurrencyModel>? = null
     private val _currencySymbols = MutableLiveData<List<String>>()
     var connectionStatus = MutableLiveData<Boolean>()
-
-    fun getCurrencySymbols(): LiveData<List<String>> {
-        return _currencySymbols
-    }
-
-    var currencyResponse: Response<CurrencyModel>? = null
+    var ratesDate = MutableLiveData<String>()
 
     init {
         getLatestCurrencyExchange()
+    }
+
+    fun getCurrencySymbols(): LiveData<List<String>> {
+        return _currencySymbols
     }
 
     fun getLatestCurrencyExchange() {
@@ -44,6 +44,12 @@ class CurrencyViewModel(app: Application, private val currencyRepository: Curren
         }
     }
 
+    fun getHistoricalCurrencyExchangeForBase(date: String, base: String) {
+        viewModelScope.launch {
+            safeHistoricalCurrencyExchangeForBaseCall(date, base)
+        }
+    }
+
     fun getRate(symbol: String): Double? {
         return currencyResponse?.body()?.rates?.get(symbol)
     }
@@ -54,8 +60,25 @@ class CurrencyViewModel(app: Application, private val currencyRepository: Curren
                 connectionStatus.value = true
                 currencyResponse = currencyRepository.getLatestCurrencyExchange()
                 _currencySymbols.value = currencyResponse?.body()?.rates?.keys?.toList()
+                ratesDate.value = currencyResponse?.body()?.date
             }else{
                 connectionStatus.value = false
+            }
+        } catch (t: Throwable) {
+            when (t) {
+                is IOException -> return//TODO()
+                else -> return//TODO
+            }
+        }
+    }
+
+    private suspend fun safeHistoricalCurrencyExchangeForBaseCall(date: String, base: String) {
+        try {
+            val hasConnection = hasInternetConnection()
+            connectionStatus.postValue(hasConnection)
+            if (hasConnection) {
+                currencyResponse = currencyRepository.getHistoricalCurrencyExchange(date, base)
+                _currencySymbols.value = currencyResponse?.body()?.rates?.keys?.toList()
             }
         } catch (t: Throwable) {
             when (t) {
